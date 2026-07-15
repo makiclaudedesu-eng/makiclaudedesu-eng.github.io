@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>認証コード</title>
+<style>
+  body{font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;
+       max-width:720px;margin:40px auto;padding:0 20px;line-height:1.8;color:#222}
+  h1{font-size:1.4rem}
+  .card{border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin:16px 0}
+  .ok{border-color:#16a34a;background:#f0fdf4}
+  .ng{border-color:#dc2626;background:#fef2f2}
+  code{background:#f3f4f6;padding:2px 6px;border-radius:4px;word-break:break-all}
+  #url{font-size:.85rem;color:#555;word-break:break-all}
+  button{font-size:1rem;padding:10px 18px;border-radius:8px;border:0;
+         background:#3b5bdb;color:#fff;cursor:pointer}
+  button:active{opacity:.7}
+  .step{color:#555;font-size:.95rem}
+</style>
+</head>
+<body>
+  <div id="out"></div>
+
+<script>
+(function () {
+  var p = new URLSearchParams(location.search);
+  var code = p.get("code");
+  var err = p.get("error");
+  var out = document.getElementById("out");
+
+  if (code) {
+    out.innerHTML =
+      '<h1>✅ 認証できました</h1>' +
+      '<div class="card ok">' +
+        '<p class="step">下のボタンでコピーして、ターミナルの <code>URL&gt;</code> に貼り付けて Enter を押してください。</p>' +
+        '<p><button id="copy">このページのURLをコピー</button> <span id="done"></span></p>' +
+      '</div>' +
+      '<div class="card"><p id="url">' + location.href.replace(/</g, "&lt;") + '</p></div>' +
+      '<p class="step">※ この画面は認証の受け渡し専用です。閉じて大丈夫です。</p>';
+    document.getElementById("copy").onclick = function () {
+      navigator.clipboard.writeText(location.href).then(function () {
+        document.getElementById("done").textContent = "コピーしました！";
+      });
+    };
+  } else if (err) {
+    out.innerHTML =
+      '<h1>❌ 認証が拒否されました</h1>' +
+      '<div class="card ng"><p><code>' + err.replace(/</g, "&lt;") + '</code></p>' +
+      '<p class="step">もう一度ターミナルからやり直してください。</p></div>';
+  } else {
+    out.innerHTML =
+      '<h1>認証コードの受け渡しページ</h1>' +
+      '<div class="card"><p class="step">' +
+      'このページは、TikTokの認証後に自動で飛んでくる場所です。' +
+      '直接開いても意味はありません。</p></div>';
+  }
+})();
+</script>
+</body>
+</html>
